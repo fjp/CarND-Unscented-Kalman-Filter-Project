@@ -36,8 +36,11 @@ UKF::UKF() {
     // initial covariance matrix
     P_ = MatrixXd(n_x_, n_x_);
 
-	// predicted sigma points matrix
-	Xsig_pred_ = MatrixXd(n_x_, 2 * n_x_ + 1);
+    // predicted sigma points matrix
+    Xsig_pred_ = MatrixXd(n_x_, 2 * n_x_ + 1);
+
+    //time when the state is true, in us
+    time_us_ = 0.0;
 
     // Process noise standard deviation longitudinal acceleration in m/s^2
     std_a_ = 3;
@@ -61,9 +64,7 @@ UKF::UKF() {
     std_radrd_ = 0.3;
 
     /**
-TODO:
-
-Complete the initialization. See ukf.h for other member properties.
+      Complete the initialization. See ukf.h for other member properties.
 
 Hint: one or more values initialized above might be wildly off...
 */
@@ -94,52 +95,44 @@ measurements.
      * Create the covariance matrix.
      * Remember: you'll need to convert radar from polar to cartesian coordinates.
      */
-    if (!is_initialized) {
-        if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
+    if (!is_initialized_) {
+        if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
             /**
               Convert radar from polar to cartesian coordinates and initialize state.
               */
-            float rho = measurement_pack.raw_measurements_[0];
-            float phi = measurement_pack.raw_measurements_[1];
+            float rho = meas_package.raw_measurements_[0];
+            float phi = meas_package.raw_measurements_[1];
             float px = rho*cos(phi);
             float py = rho*sin(phi);
             float vx = 0;
             float vy = 0;
 
-            ekf_.x_ << px, py, vx, vy;
+            x_ << px, py, vx, vy;
             cout << "First measurement was radar" << endl;
 
-
-            Hj_ = tools.CalculateJacobian(ekf_.x_);
-
-            //measurement matrix
-            ekf_.H_ = Hj_;
-
         }
-        else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
+        else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
             /**
               Initialize state.
               */
             //set the state with the initial location and zero velocity
-            float px = measurement_pack.raw_measurements_[0];
-            float py = measurement_pack.raw_measurements_[1];
+            float px = meas_package.raw_measurements_[0];
+            float py = meas_package.raw_measurements_[1];
             float vx = 0;
             float vy = 0;
-            ekf_.x_ << px, py, vx, vy;
+            x_ << px, py, vx, vy;
             cout << "First measurement was laser" << endl;
 
-            //measurement matrix
-            ekf_.H_ = H_laser_;
         }
 
-        previous_timestamp_ = measurement_pack.timestamp_;
+        time_us_ = meas_package.timestamp_;
 
         // done initializing, no need to predict or update
         is_initialized_ = true;
         return;
     }
 
-    meas_package
+    //meas_package
 }
 
 /**
