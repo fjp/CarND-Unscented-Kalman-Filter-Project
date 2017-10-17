@@ -28,16 +28,16 @@ UKF::UKF() {
     n_aug_ = 7;
 
     // Sigma point spreading parameter
-    lambda_ = 3 - n_aug;
-
+    lambda_ = 3 - n_aug_;
 
     // initial state vector
     x_ = VectorXd(n_x_);
-    x_ = VectorXd::Ones(n_x_);
 
     // initial covariance matrix
     P_ = MatrixXd(n_x_, n_x_);
-    P_ = MatrixXd::Identy(n_x_, n_x_);
+
+	// predicted sigma points matrix
+	Xsig_pred_ = MatrixXd(n_x_, 2 * n_x_ + 1);
 
     // Process noise standard deviation longitudinal acceleration in m/s^2
     std_a_ = 3;
