@@ -73,11 +73,20 @@ class UKF {
         ///* Augmented state dimension
         int n_aug_;
 
-        ///* Measurement dimension
-        int n_z_;
+        ///* Measurement dimension for laser
+        int n_z_las_;
+
+        ///* Measurement dimension for radar
+        int n_z_rad_;
 
         ///* Sigma point spreading parameter
         double lambda_;
+
+        ///* the current NIS for radar
+        double NIS_radar_;
+
+        ///* the current NIS for laser
+        double NIS_laser_;
 
 
         /**
@@ -135,16 +144,19 @@ class UKF {
 
         /**
          * Transform the predicted state into the measurement space and
-         * calculate the measurement mean and its covariance
-         * @param Xsig_pred The matrix with the predicted sigma points
+         * calculate the measurement mean and its covariance using the
+         * radar measurement model
+         * @param Zsig The matrix with the predicted sigma points in the measurement space
+         * @param z_pred The mean predicted measurement
+         * @param S The radar measurement covariance matrix
          */
-        void PredictRadarMeasurement(VectorXd* z_out);
+        void PredictRadarMeasurement(MatrixXd* Zsig, VectorXd* z_pred, MatrixXd* S);
 
         /**
          * Update the state depending on the current measurement (radar or lidar)
          * @param Xsig_pred The matrix with the predicted sigma points
          */
-        void UpdateState();
+        void UpdateState(MatrixXd* Zsig, VectorXd* z_pred, MatrixXd* S, VectorXd* z, double* NIS);
 
 };
 

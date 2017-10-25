@@ -26,8 +26,45 @@ std::string hasData(std::string s) {
   return "";
 }
 
-int main()
+void check_arguments(int argc, char* argv[]) {
+  string usage_instructions = "Usage instructions: ";
+  usage_instructions += argv[0];
+  usage_instructions += " output.txt";
+
+  bool has_valid_args = false;
+
+  // make sure the user has provided an output file
+  if (argc == 1) {
+    cerr << usage_instructions << endl;
+  } else if (argc == 2) {
+    has_valid_args = true;
+  } else if (argc > 2) {
+    cerr << "Too many arguments.\n" << usage_instructions << endl;
+  }
+
+  if (!has_valid_args) {
+    exit(EXIT_FAILURE);
+  }
+}
+
+void check_files(ofstream& out_file, string& out_name) {
+  if (!out_file.is_open()) {
+    cerr << "Cannot open output file: " << out_name << endl;
+    exit(EXIT_FAILURE);
+  }
+}
+
+int main(int argc, char* argv[])
 {
+
+  check_arguments(argc, argv);
+
+  string out_file_name_ = argv[2];
+  ofstream out_file_(out_file_name_.c_str(), ofstream::out);
+
+  check_files(out_file_, out_file_name_);
+
+
   uWS::Hub h;
 
   // Create a Kalman Filter instance
@@ -48,16 +85,16 @@ int main()
 
       auto s = hasData(std::string(data));
       if (s != "") {
-      	
+
         auto j = json::parse(s);
 
         std::string event = j[0].get<std::string>();
-        
+
         if (event == "telemetry") {
           // j[1] is the data JSON object
-          
+
           string sensor_measurment = j[1]["sensor_measurement"];
-          
+
           MeasurementPackage meas_package;
           istringstream iss(sensor_measurment);
     	  long long timestamp;
@@ -100,13 +137,13 @@ int main()
     	  iss >> vy_gt;
     	  VectorXd gt_values(4);
     	  gt_values(0) = x_gt;
-    	  gt_values(1) = y_gt; 
+    	  gt_values(1) = y_gt;
     	  gt_values(2) = vx_gt;
     	  gt_values(3) = vy_gt;
     	  ground_truth.push_back(gt_values);
-          
+
           //Call ProcessMeasurment(meas_package) for Kalman filter
-    	  ukf.ProcessMeasurement(meas_package);    	  
+    	  ukf.ProcessMeasurement(meas_package);
 
     	  //Push the current estimated x,y positon from the Kalman filter's state vector
 
@@ -124,7 +161,7 @@ int main()
     	  estimate(1) = p_y;
     	  estimate(2) = v1;
     	  estimate(3) = v2;
-    	  
+
     	  estimations.push_back(estimate);
 
     	  VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
@@ -139,10 +176,10 @@ int main()
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-	  
+
         }
       } else {
-        
+
         std::string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }
@@ -186,90 +223,3 @@ int main()
   }
   h.run();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
