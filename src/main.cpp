@@ -59,7 +59,9 @@ int main(int argc, char* argv[])
 
   check_arguments(argc, argv);
 
-  string out_file_name_ = argv[2];
+  cout << argv[1] << endl;
+
+  string out_file_name_ = argv[1];
   ofstream out_file_(out_file_name_.c_str(), ofstream::out);
 
   check_files(out_file_, out_file_name_);

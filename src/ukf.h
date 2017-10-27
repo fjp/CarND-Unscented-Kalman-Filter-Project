@@ -145,6 +145,16 @@ class UKF {
         /**
          * Transform the predicted state into the measurement space and
          * calculate the measurement mean and its covariance using the
+         * lidar measurement model
+         * @param Zsig The matrix with the predicted sigma points in the measurement space
+         * @param z_pred The mean predicted measurement
+         * @param S The lidar measurement covariance matrix
+         */
+        void PredictLidarMeasurement(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S);
+
+        /**
+         * Transform the predicted state into the measurement space and
+         * calculate the measurement mean and its covariance using the
          * radar measurement model
          * @param Zsig The matrix with the predicted sigma points in the measurement space
          * @param z_pred The mean predicted measurement
