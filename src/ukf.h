@@ -129,18 +129,18 @@ class UKF {
          * Create augmented sigma point matrix
          * @param Xsig_aug The augmented sigma point matrix
          */
-        void AugmentedSigmaPoints(MatrixXd* Xsig_aug);
+        void AugmentedSigmaPoints(MatrixXd& Xsig_aug);
 
         /**
          * Predict the sigma points using the process model
          * @param Xsig_aug The augmented sigma point matrix
          */
-        void SigmaPointPrediction(MatrixXd* Xsig_aug)
+        void SigmaPointPrediction(MatrixXd& Xsig_aug, double delta_t);
 
         /**
          * Calculate the predicted mean and covariance from the sigma points
          */
-        void PredictMeanAndCovariance()
+        void PredictMeanAndCovariance();
 
         /**
          * Transform the predicted state into the measurement space and
@@ -150,13 +150,13 @@ class UKF {
          * @param z_pred The mean predicted measurement
          * @param S The radar measurement covariance matrix
          */
-        void PredictRadarMeasurement(MatrixXd* Zsig, VectorXd* z_pred, MatrixXd* S);
+        void PredictRadarMeasurement(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S);
 
         /**
          * Update the state depending on the current measurement (radar or lidar)
          * @param Xsig_pred The matrix with the predicted sigma points
          */
-        void UpdateState(MatrixXd* Zsig, VectorXd* z_pred, MatrixXd* S, VectorXd* z, double* NIS);
+        void UpdateState(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, VectorXd& z, double& NIS);
 
 };
 
