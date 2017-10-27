@@ -161,7 +161,7 @@ measurements.
         // done initializing, no need to predict or update
         is_initialized_ = true;
 
-        cout << "Initialized" << endl;
+        //cout << "Initialized" << endl;
         return;
     }
 
@@ -174,7 +174,7 @@ measurements.
     double dt = (meas_package.timestamp_ - time_us_) / 1000000.0; //dt - expressed in seconds
     time_us_ = meas_package.timestamp_;
 
-    cout << "dt " << dt << endl;
+    //cout << "dt " << dt << endl;
 
 
     Prediction(dt);
@@ -208,7 +208,7 @@ void UKF::Prediction(double delta_t) {
       Estimate the object's location. Modify the state
       vector, x_. Predict sigma points, the state, and the state covariance matrix.
       */
-      cout << endl << "Prediction: " << endl;
+      //cout << endl << "Prediction: " << endl;
     //create sigma point matrix
     MatrixXd Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
     Xsig_aug.fill(0.0);
@@ -236,7 +236,7 @@ position. Modify the state vector, x_, and covariance, P_.
 You'll also need to calculate the lidar NIS.
 */
 
-  cout << endl << "UpdateLidar: " << endl;
+  //cout << endl << "UpdateLidar: " << endl;
     //create example vector for incoming radar measurement
     VectorXd z = VectorXd(n_z_las_);
     z = meas_package.raw_measurements_;
@@ -266,7 +266,7 @@ position. Modify the state vector, x_, and covariance, P_.
 
 You'll also need to calculate the radar NIS.
 */
-  cout << endl << "UpdateRadar: " << endl;
+  //cout << endl << "UpdateRadar: " << endl;
     //create example vector for incoming radar measurement
     VectorXd z = VectorXd(n_z_rad_);
     z = meas_package.raw_measurements_;
@@ -286,7 +286,7 @@ You'll also need to calculate the radar NIS.
 
 void UKF::AugmentedSigmaPoints(MatrixXd& Xsig_aug) {
 
-    cout << "UKF::AugmentedSigmaPoints Xsig_aug" << endl << Xsig_aug << endl;
+    //cout << "UKF::AugmentedSigmaPoints Xsig_aug" << endl << Xsig_aug << endl;
 
     //create augmented mean vector
     VectorXd x_aug = VectorXd(n_aug_);
@@ -315,7 +315,7 @@ void UKF::AugmentedSigmaPoints(MatrixXd& Xsig_aug) {
         Xsig_aug.col(i+1)       = x_aug + sqrt(lambda_+n_aug_) * L.col(i);
         Xsig_aug.col(i+1+n_aug_) = x_aug - sqrt(lambda_+n_aug_) * L.col(i);
     }
-    cout << "UKF::AugmentedSigmaPoints Xsig_aug" << endl << Xsig_aug << endl;
+    //cout << "UKF::AugmentedSigmaPoints Xsig_aug" << endl << Xsig_aug << endl;
 }
 
 void UKF::SigmaPointPrediction(MatrixXd& Xsig_aug, double delta_t) {
@@ -372,7 +372,7 @@ void UKF::PredictMeanAndCovariance() {
     for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //iterate over sigma points
         x_ = x_ + weights_(i) * Xsig_pred_.col(i);
     }
-    cout << "Predict x_ " << endl << x_ << endl;
+    //cout << "Predict x_ " << endl << x_ << endl;
 
     //predicted state covariance matrix
     P_.fill(0.0);
@@ -389,7 +389,7 @@ void UKF::PredictMeanAndCovariance() {
         P_ = P_ + weights_(i) * x_diff * x_diff.transpose() ;
     }
 
-    cout << "Predict P_ " << endl << P_ << endl;
+    //cout << "Predict P_ " << endl << P_ << endl;
 }
 
 void UKF::PredictLidarMeasurement(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S) {
@@ -474,7 +474,7 @@ void UKF::PredictRadarMeasurement(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S)
 void UKF::UpdateState(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, VectorXd& z, double& NIS) {
 
     //create matrix for cross correlation Tc
-    cout << "Measurement size " << z.size() << endl;
+    //cout << "Measurement size " << z.size() << endl;
     MatrixXd Tc = MatrixXd(n_x_, z.size());
 
 
@@ -486,7 +486,7 @@ void UKF::UpdateState(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, VectorXd& z
         VectorXd z_diff = Zsig.col(i) - z_pred;
         //angle normalization if we are dealing with a radar measurement
         if (z.size() > n_z_las_) {
-          cout << "Normalize angle " << z.size() << endl;
+          //cout << "Normalize angle " << z.size() << endl;
           double angle = z_diff(1);
           z_diff(1) = atan2(sin(angle),cos(angle));
           //while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
@@ -512,7 +512,7 @@ void UKF::UpdateState(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, VectorXd& z
 
     //angle normalization if we are dealing with a radar measurement
     if (z.size() > n_z_las_) {
-      cout << "normalize Radar" << endl;
+      //cout << "normalize Radar" << endl;
       double angle = z_diff(1);
       z_diff(1) = atan2(sin(angle),cos(angle));
       //while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
@@ -523,8 +523,8 @@ void UKF::UpdateState(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, VectorXd& z
     x_ = x_ + K * z_diff;
     P_ = P_ - K*S*K.transpose();
 
-    cout << "Update x_ " << endl << x_ << endl;
-    cout << "Update P_ " << endl << P_ << endl;
+    //cout << "Update x_ " << endl << x_ << endl;
+    //cout << "Update P_ " << endl << P_ << endl;
 
     NIS =  z_diff.transpose() * S.inverse() * z_diff;
 }
