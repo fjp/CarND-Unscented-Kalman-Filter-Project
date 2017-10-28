@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
 
-  h.onMessage([&ukf,&tools,&estimations,&ground_truth,&out_file_](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  h.onMessage([&ukf,&tools,&estimations,&ground_truth,&out_file_,&out_file_name_](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -117,11 +117,12 @@ int main(int argc, char* argv[])
           		iss >> timestamp;
           		meas_package.timestamp_ = timestamp;
 
-              if (!out_file_.is_open()) {
+              //if (!out_file_.is_open()) {
+                out_file_.open(out_file_name_.c_str(), ofstream::out);
                 // output the NIS values
                 out_file_ << ukf.NIS_laser_ << "\n";
                 cout << "NIS_laser_ " << ukf.NIS_laser_ << endl;
-              }
+              //}
 
           } else if (sensor_type.compare("R") == 0) {
 
@@ -137,18 +138,14 @@ int main(int argc, char* argv[])
           		iss >> timestamp;
           		meas_package.timestamp_ = timestamp;
 
-              if (!out_file_.is_open()) {
+              //if (!out_file_.is_open()) {
+                out_file_.open(out_file_name_.c_str(), ofstream::out);
                 // output the NIS values
                 out_file_ << ukf.NIS_radar_ << "\n";
 
                 cout << "NIS_radar_ " << ukf.NIS_radar_ << endl;
-              }
+              //}
 
-          }
-
-          // close files
-          if (out_file_.is_open()) {
-            out_file_.close();
           }
 
           float x_gt;
@@ -247,7 +244,10 @@ int main(int argc, char* argv[])
   }
   h.run();
 
-
+  // close files
+  if (out_file_.is_open()) {
+    out_file_.close();
+  }
 
   cout << "DONE" << endl;
 }
